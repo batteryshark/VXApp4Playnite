@@ -74,11 +74,6 @@ function global:export_meta($game){
 	}
 }
 
-
-#$PlayniteApi = (Get-Runspace)[-2].SessionStateProxy.GetVariable("PlayniteApi")
-#$vxapp_games = get_vxapp_games
-#if($vxapp_games.Count -lt 1){return;}
-
 function global:VXAppExport{
     if($PlayniteApi.MainView.SelectedGames.Count -lt 1){return}
 	$PlayniteApi.Dialogs.ShowMessage("If you want to just export metadata to your VXApps, cancel the following directory selection.")

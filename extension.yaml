@@ -1,12 +1,21 @@
 Name: VXApp
 Author: BatteryShark
 Version: 1.0.0
-Module: VXAppUtils.ps1
+Module: VXApp.ps1
 Type: Script
 Functions: 
-    - Description: Check for Updates
-      FunctionName: InstallUpdates
+    - Description: (V4P) Check for Updates
+      FunctionName: UpdateExtension
+    - Description: (V4P) Install Loader
+      FunctionName: Install
+    - Description: (V4P) Import VXApp(s)
+      FunctionName: ImportVXApps
+    - Description: (V4P) Export VXApp(s)
+      FunctionName: VXAppExport
 Links:
-    - Name: Source
-      Url: WARK
+    - Name: VXApp4Playnite Loader [V4P]
+      Url: https://github.com/batteryshark/V4P
+    - Name: VXApp4Playnite Extension
+      Url: https://github.com/batteryshark/VXApp4Playnite
+    
 Icon: Resources\vxapp.png
