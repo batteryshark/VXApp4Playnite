@@ -33,8 +33,8 @@ function DownloadLatestRelease([string] $target_path, [string] $user, [string] $
     if(!$update_available){return $false}
     
     #Wipe out Our Directory
-    #Remove-Item -LiteralPath $target_path -Recurse
-    #New-Item -ItemType Directory -Force -Path $target_path
+    Remove-Item -LiteralPath $target_path -Recurse
+    New-Item -ItemType Directory -Force -Path $target_path
 
     # Get Recent Tag (Again)
     $remote_tag = GetRemoteTag $user $repo
