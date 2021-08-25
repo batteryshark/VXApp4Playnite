@@ -1,0 +1,12 @@
+Name: VXApp
+Author: BatteryShark
+Version: 1.0.0
+Module: VXAppUtils.ps1
+Type: Script
+Functions: 
+    - Description: Check for Updates
+      FunctionName: InstallUpdates
+Links:
+    - Name: Source
+      Url: WARK
+Icon: Resources\vxapp.png
