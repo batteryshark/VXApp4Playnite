@@ -73,12 +73,14 @@ function global:process_vxapp($item){
             $PlayniteApi.Dialogs.ShowMessage("Could not Parse VXApp.Config File at " + $appconfig_path)
             continue
         }
-
+		$first_config_entry = $app_config.Get(0)
+		
         $playTask = New-Object "Playnite.SDK.Models.GameAction"
         $playTask.Type = "Emulator"
         $playTask.Name = "Play"
         $playTask.EmulatorId = $loader.Id
         $playTask.EmulatorProfileId = $profile_run.Id
+		$playTask.AdditionalArguments = "config=`""+$first_config_entry.name+"`""
         $game.PlayAction =  $playTask
         
 
@@ -113,15 +115,13 @@ function global:process_vxapp($item){
 
         # Finally, Parse the vxapp.info and read out all other entrypoints to add as actions.
         foreach ($config in $app_config){
-            if($config.name -ne "default"){
-                $addlplayTask = New-Object "Playnite.SDK.Models.GameAction"
-                $addlplayTask.Type = "Emulator"
-                $addlplayTask.AdditionalArguments = "config=`""+$config.name+"`""
-                $addlplayTask.Name = $config.name
-                $addlplayTask.EmulatorId = $loader.Id
-                $addlplayTask.EmulatorProfileId = $loader.Profiles[0].Id
-                $game.OtherActions.Add($addlplayTask)
-            }
+			$addlplayTask = New-Object "Playnite.SDK.Models.GameAction"
+			$addlplayTask.Type = "Emulator"
+			$addlplayTask.AdditionalArguments = "config=`""+$config.name+"`""
+			$addlplayTask.Name = $config.name
+			$addlplayTask.EmulatorId = $loader.Id
+			$addlplayTask.EmulatorProfileId = $loader.Profiles[0].Id
+			$game.OtherActions.Add($addlplayTask)
         }
 
 
