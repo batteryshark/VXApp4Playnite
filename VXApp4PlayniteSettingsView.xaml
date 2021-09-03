@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="VXApp4Playnite.VXAppPluginSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="400" d:DesignWidth="600">
+    <StackPanel>
+        <Grid Height="400">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="199*"/>
+                <RowDefinition Height="201*"/>
+            </Grid.RowDefinitions>
+            <Label Content="VXApp4Playnite Settings" Height="30" Margin="220,10,0,158.971" FontSize="16" HorizontalAlignment="Left" Width="187"/>
+            <TextBlock Text="Path to Local App Directory:" HorizontalAlignment="Left" Width="264" Height="19" VerticalAlignment="Top" Margin="43,109,0,0"/>
+            <TextBox x:Name="tpath_app" Text="{Binding local_app_path,UpdateSourceTrigger=PropertyChanged }" Margin="43,133,0,0" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" Width="364"/>
+            <TextBlock Text="Path to Tmp Directory:" Height="19" VerticalAlignment="Top" HorizontalAlignment="Left" Width="264" Margin="43,170,0,0"/>
+            <TextBox x:Name="tpath_tmp" Text="{Binding tmp_path,UpdateSourceTrigger=PropertyChanged}" Margin="43,0,0,190" HorizontalAlignment="Left" Width="364" Height="22" VerticalAlignment="Bottom" Grid.RowSpan="2"/>
+            <TextBlock Text="Path to Save Directory:" HorizontalAlignment="Left" Width="304" Height="22" VerticalAlignment="Top" Margin="43,25,0,0" Grid.Row="1"/>
+            <TextBox x:Name="tpath_save" Text="{Binding save_path, UpdateSourceTrigger=PropertyChanged}" Margin="43,47,0,0" HorizontalAlignment="Left" Width="364" Height="22" VerticalAlignment="Top" Grid.Row="1"/>
+            <Button x:Name="btn_pick_app_path" Content="..." HorizontalAlignment="Left" Margin="407,133,0,0" VerticalAlignment="Top" Width="35" Height="22" Click="btn_pick_app_path_Click"/>
+            <Button x:Name="btn_pick_tmp_path" Content="..." HorizontalAlignment="Left" Margin="407,188,0,0" VerticalAlignment="Top" Width="35" Height="22" Click="btn_pick_tmp_path_Click" Grid.RowSpan="2"/>
+            <Button x:Name="btn_pick_save_path" Content="..." HorizontalAlignment="Left" Margin="407,47,0,0" VerticalAlignment="Top" Width="35" Height="22" Grid.Row="1" Click="btn_pick_save_path_Click"/>
+            <TextBlock Text="Paths to App Repos (semicolon-delimited):" HorizontalAlignment="Left" Width="339" Height="19" VerticalAlignment="Top" Margin="43,50,0,0"/>
+            <TextBox x:Name="tpath_repos" Text="{Binding path_repos, UpdateSourceTrigger=PropertyChanged}" Margin="43,74,0,0" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" Width="364"/>
+            <CheckBox Content="Backsplash" HorizontalAlignment="Left" Margin="43,85,0,0" Grid.Row="1" VerticalAlignment="Top" IsChecked="{Binding enable_backsplash, UpdateSourceTrigger=PropertyChanged}"/>
+            <CheckBox Content="Realtime Refresh*" HorizontalAlignment="Left" Margin="43,111,0,0" Grid.Row="1" VerticalAlignment="Top" IsChecked="{Binding enable_rrf, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label Content="* Requires Restart" HorizontalAlignment="Left" Margin="43,165,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+            <CheckBox Content="Debug Mode" HorizontalAlignment="Left" Margin="43,138,0,0" Grid.Row="1" VerticalAlignment="Top" IsChecked="{Binding debug_vxapp, UpdateSourceTrigger=PropertyChanged}"/>
+        </Grid>
+    </StackPanel>
+</UserControl>

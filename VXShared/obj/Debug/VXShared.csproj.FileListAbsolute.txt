@@ -1,0 +1,8 @@
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\VXShared\obj\Debug\VXShared.csprojAssemblyReference.cache
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\VXShared\obj\Debug\VXShared.csproj.CoreCompileInputs.cache
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\VXShared\bin\Debug\VXShared.dll
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\VXShared\bin\Debug\VXShared.pdb
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\VXShared\bin\Debug\Newtonsoft.Json.dll
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\VXShared\obj\Debug\VXShared.csproj.CopyComplete
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\VXShared\obj\Debug\VXShared.dll
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\VXShared\obj\Debug\VXShared.pdb

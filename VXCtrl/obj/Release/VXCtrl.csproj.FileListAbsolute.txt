@@ -1,0 +1,11 @@
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\tools\VXCtrl.exe.config
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\tools\VXCtrl.exe
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\VXCtrl\obj\Release\VXCtrl.csprojAssemblyReference.cache
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\VXCtrl\obj\Release\VXCtrl.csproj.CoreCompileInputs.cache
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\VXCtrl\obj\Release\VXCtrl.csproj.CopyComplete
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\VXCtrl\obj\Release\VXCtrl.exe
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\VXCtrl\obj\Release\VXCtrl.pdb
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\VXCtrl\obj\Release\VXCtrl.csprojAssemblyReference.cache
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\VXCtrl\obj\Release\VXCtrl.csproj.CoreCompileInputs.cache
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\VXCtrl\obj\Release\VXCtrl.csproj.CopyComplete
+C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\VXCtrl\obj\Release\VXCtrl.exe
