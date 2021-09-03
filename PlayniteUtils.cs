@@ -27,6 +27,17 @@ namespace VXApp4Playnite
             return null;
         }
 
+        public static Tag GetOnDeviceTag(IPlayniteAPI PlayniteApi)
+        {
+            foreach(Tag tag in PlayniteApi.Database.Tags)
+            {
+                if(tag.Name == "OnDevice")
+                {
+                    return tag;
+                }
+            }
+            return PlayniteApi.Database.Tags.Add("OnDevice");
+        }
         public static Platform LookupPlatform(IPlayniteAPI PlayniteApi)
         {
             
@@ -80,12 +91,12 @@ namespace VXApp4Playnite
             game.IsInstalling = true;
             game.InstallDirectory = "";
             string install_path = Path.Combine(local_app_path, Path.GetFileName(game.GameImagePath));
-            Thread _ithrd = new Thread(unused => AppInstaller(game, install_path));
+            Thread _ithrd = new Thread(unused => AppInstaller(PlayniteApi, game, install_path));
             _ithrd.Start();
             return true;
         }
 
-        private static void AppInstaller(Game game, String install_path)
+        private static void AppInstaller(IPlayniteAPI PlayniteApi, Game game, String install_path)
         {
             Utils.CopyFilesRecursively(game.GameImagePath, install_path);
             game.IsInstalling = false;
@@ -98,6 +109,12 @@ namespace VXApp4Playnite
                     action.Path = action.Path.Replace("vxctrl/install", "vxctrl/uninstall");
                 }
             }
+            if(game.TagIds == null)
+            {
+                game.TagIds = new List<Guid>();
+            }
+            game.TagIds.Add(GetOnDeviceTag(PlayniteApi).Id);
+            PlayniteApi.Notifications.Add(new NotificationMessage("Install Notifier", $"{game.Name} Installed.", NotificationType.Info));
         }
 
         public static Boolean UninstallGame(IPlayniteAPI PlayniteApi, Game game, string local_app_path)
@@ -129,6 +146,17 @@ namespace VXApp4Playnite
                 }
 
             }
+           
+            foreach(var tag in game.Tags)
+            {
+                if(tag.Name == "OnDevice")
+                {
+                    game.TagIds.Remove(tag.Id);
+                    break;
+                }
+            }
+            
+            PlayniteApi.Notifications.Add(new NotificationMessage("Uninstall Notifier", $"{game.Name} Uninstalled.", NotificationType.Info));
             return true;
         }
 
@@ -198,6 +226,7 @@ namespace VXApp4Playnite
 
             //game.PluginId = PluginId;
             game.OtherActions = new ObservableCollection<GameAction>();
+            game.TagIds = new List<Guid>();
             game.InstallDirectory = path_to_vxapp;
             game.GameImagePath = path_to_vxapp;
             game.IsInstalled = true;
