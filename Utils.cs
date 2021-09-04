@@ -96,7 +96,15 @@ namespace VXApp4Playnite
             //Copy all the files & Replaces any files with the same name
             foreach (string newPath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
             {
-                File.Copy(newPath, newPath.Replace(sourcePath, targetPath), true);
+                // HACK - Have to Fix this.
+                try
+                {
+                    File.Copy(newPath, newPath.Replace(sourcePath, targetPath), true);
+                }
+                catch
+                {
+
+                }
             }
         }
 
