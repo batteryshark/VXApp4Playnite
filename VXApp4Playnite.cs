@@ -205,6 +205,9 @@ namespace VXApp4Playnite
                     case "uninstall":
                         op_status = PlayniteUtils.UninstallGame(PlayniteApi, game, settings.local_app_path);
                         break;
+                    case "opensave":
+                        op_status = PlayniteUtils.OpenSaveDir(PlayniteApi, game, settings.local_app_path);
+                        break;
                     default:
                         break;
                 }
@@ -262,7 +265,6 @@ namespace VXApp4Playnite
                 bs.Disable();
             }
         }
-
 
 
         // To add new main menu items override GetMainMenuItems

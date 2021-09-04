@@ -4,6 +4,7 @@ using Playnite.SDK.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -171,6 +172,17 @@ namespace VXApp4Playnite
             return false;
         }
 
+        public static Boolean OpenSaveDir(IPlayniteAPI PlayniteApi, Game game, string save_path)
+        {
+            string save_cache_path = Path.Combine(save_path, Utils.DeriveAppCode(game.GameImagePath));
+            if (!Directory.Exists(save_cache_path))
+            {
+                Directory.CreateDirectory(save_cache_path);
+            }
+            Process.Start(save_cache_path);
+            return true;
+        }
+
         public class AppInfo
         {
             public String Features { get; set; }
@@ -302,6 +314,14 @@ namespace VXApp4Playnite
                 Path = $"playnite://vxctrl/clearcache/{game.Id}"
             };
             game.OtherActions.Add(ccTask);
+
+            GameAction openSaveTask = new GameAction
+            {
+                Name = "[VX] Open Save Directory",
+                Type = GameActionType.URL,
+                Path = $"playnite://vxctrl/opensave/{game.Id}"
+            };
+            game.OtherActions.Add(openSaveTask);
 
             foreach (var entry in config_entries)
             {
