@@ -108,7 +108,7 @@ namespace VXApp4Playnite
                 {
                     // Import New Entry
                     // Make sure to put the new id into entry.entryId
-                    entry.entryId = PlayniteUtils.ImportGame(PlayniteApi, entry.newImagePath);
+                    entry.entryId = PlayniteUtils.ImportGame(PlayniteApi, entry.newImagePath, settings.plugin_name);
                     if (entry.entryId == Guid.Empty) { continue; }
 
                 }
@@ -172,7 +172,8 @@ namespace VXApp4Playnite
         public VXApp4Playnite(IPlayniteAPI api) : base(api)
         {
             settings = new VXApp4PlayniteSettings(this);
-            plugin_path = Path.Combine(PlayniteApi.Paths.ApplicationPath, "Extensions", "VXApp4Playnite");
+            settings.plugin_name = "VXApp4Playnite" + "_" + this.Id.ToString();
+            plugin_path = Path.Combine(PlayniteApi.Paths.ApplicationPath, "Extensions", settings.plugin_name);
             tools_path = Path.Combine(plugin_path, "tools");
             Directory.CreateDirectory(plugin_path);
             Directory.CreateDirectory(tools_path);

@@ -193,10 +193,10 @@ namespace VXApp4Playnite
             public String[] preload { get; set; }
         }
 
-        public static Guid ImportGame(IPlayniteAPI PlayniteApi, string path_to_vxapp)
+        public static Guid ImportGame(IPlayniteAPI PlayniteApi, string path_to_vxapp, string plugin_dir_name)
         {
-            string vxlauncher_path = "{PlayniteDir}\\Extensions\\VXApp4Playnite\\tools\\VXLauncher.exe";
-            string vxlauncher_wd = "{PlayniteDir}\\Extensions\\VXApp4Playnite\\tools";
+            string vxlauncher_path = "{PlayniteDir}\\Extensions\\" + plugin_dir_name + "\\tools\\VXLauncher.exe";
+            string vxlauncher_wd = "{PlayniteDir}\\Extensions\\" + plugin_dir_name + "\\tools\\";
             UInt64 app_size = Utils.DirSize(new DirectoryInfo(path_to_vxapp));
             string app_size_text = Utils.FileSizeFormatter.FormatSize(app_size);
             string appinfo_path = Path.Combine(path_to_vxapp, "vxapp.info");

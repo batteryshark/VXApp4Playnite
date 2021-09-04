@@ -33,7 +33,8 @@ namespace VXApp4Playnite
         public string fallback_save_path { get; set; } = string.Empty;
         [JsonIgnore]
         public String path_repos { get; set; } = string.Empty;
-
+        [JsonIgnore]
+        public String plugin_name { get; set; } = string.Empty;
 
         public VXApp4PlayniteSettings(VXApp4Playnite plugin){
             // Injecting your plugin instance is required for Save/Load method because Playnite saves data to a location based on what plugin requested the operation.
