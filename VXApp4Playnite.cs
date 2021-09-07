@@ -35,6 +35,7 @@ namespace VXApp4Playnite
         private static readonly ILogger logger = LogManager.GetLogger();
         public String plugin_path;
         public String tools_path;
+        public static Boolean is_refreshing = false;
         public static BackSplash.BackSplash bs;
 
 
@@ -44,6 +45,8 @@ namespace VXApp4Playnite
 
         public static void RefreshLibrary(IPlayniteAPI PlayniteApi,VXApp4PlayniteSettings settings)
         {
+            if (is_refreshing) { return; }
+            is_refreshing = true;
             Dictionary<string, AppEntry> appcache = new Dictionary<string, AppEntry> { };
             Platform vxp = PlayniteUtils.LookupPlatform(PlayniteApi);
 
@@ -74,8 +77,8 @@ namespace VXApp4Playnite
 
 
             // Go through all repos and update cache states
-            if (settings.app_repositories == null) {return; }
-            if (settings.app_repositories.Length == 0) { return; }
+            if (settings.app_repositories == null) { is_refreshing = false;  return; }
+            if (settings.app_repositories.Length == 0) { is_refreshing = false; return; }
             foreach (var repo in settings.app_repositories)
             {
                 foreach (var d in Directory.GetDirectories(repo))
@@ -145,7 +148,7 @@ namespace VXApp4Playnite
                     }
                 }
             }
-
+            is_refreshing = false;
         }
 
         public static void RepositoryMonitor(object p)
@@ -266,6 +269,11 @@ namespace VXApp4Playnite
             }
         }
 
+        public static void SpawnRefreshLibrary(IPlayniteAPI PlayniteApi, VXApp4PlayniteSettings settings)
+        {
+            Thread t_refresh = new Thread(unused => RefreshLibrary(PlayniteApi, settings));
+            t_refresh.Start();
+        }
 
         // To add new main menu items override GetMainMenuItems
         public override List<MainMenuItem> GetMainMenuItems(GetMainMenuItemsArgs largs)
@@ -276,7 +284,7 @@ namespace VXApp4Playnite
         {
             MenuSection = "VXApp4Playnite",
             Description = "Refresh Library",
-            Action = (args) => RefreshLibrary(PlayniteApi,settings)
+            Action = (args) => SpawnRefreshLibrary(PlayniteApi,settings)
         }
     };
         }
