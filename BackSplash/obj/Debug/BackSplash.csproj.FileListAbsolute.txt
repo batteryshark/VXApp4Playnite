@@ -1,8 +1,0 @@
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\BackSplash\bin\Debug\BackSplash.dll
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\BackSplash\bin\Debug\BackSplash.pdb
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\BackSplash\obj\Debug\BackSplash.csprojAssemblyReference.cache
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\BackSplash\obj\Debug\BackSplash.BackSplash.resources
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\BackSplash\obj\Debug\BackSplash.csproj.GenerateResource.cache
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\BackSplash\obj\Debug\BackSplash.csproj.CoreCompileInputs.cache
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\BackSplash\obj\Debug\BackSplash.dll
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\BackSplash\obj\Debug\BackSplash.pdb

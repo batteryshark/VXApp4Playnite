@@ -1,9 +1,0 @@
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\VXApp4Playnite.dll
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\obj\Release\VXApp4Playnite.csprojAssemblyReference.cache
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\obj\Release\VXApp4PlayniteSettingsView.baml
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\obj\Release\VXApp4PlayniteSettingsView.g.cs
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\obj\Release\VXApp4Playnite_MarkupCompile.cache
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\obj\Release\VXApp4Playnite.g.resources
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\obj\Release\VXApp4Playnite.csproj.CoreCompileInputs.cache
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\obj\Release\VXApp4Playnite.csproj.CopyComplete
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\obj\Release\VXApp4Playnite.dll

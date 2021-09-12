@@ -34,7 +34,6 @@ namespace VXApp4Playnite
         public override Guid Id { get; } = Guid.Parse("b9e83df4-c46b-4877-9291-ba742c9eb142");
         private static readonly ILogger logger = LogManager.GetLogger();
         public String plugin_path;
-        public String tools_path;
         public static Boolean is_refreshing = false;
         public static BackSplash.BackSplash bs;
 
@@ -111,7 +110,7 @@ namespace VXApp4Playnite
                 {
                     // Import New Entry
                     // Make sure to put the new id into entry.entryId
-                    entry.entryId = PlayniteUtils.ImportGame(PlayniteApi, entry.newImagePath, settings.plugin_name);
+                    entry.entryId = PlayniteUtils.ImportGame(PlayniteApi, entry.newImagePath);
                     if (entry.entryId == Guid.Empty) { continue; }
 
                 }
@@ -177,9 +176,15 @@ namespace VXApp4Playnite
             settings = new VXApp4PlayniteSettings(this);
             settings.plugin_name = "VXApp4Playnite" + "_" + this.Id.ToString();
             plugin_path = Path.Combine(PlayniteApi.Paths.ApplicationPath, "Extensions", settings.plugin_name);
-            tools_path = Path.Combine(plugin_path, "tools");
+
             Directory.CreateDirectory(plugin_path);
-            Directory.CreateDirectory(tools_path);
+
+            // Handling Post Update - Delete V4PUpdater.dll in this directory if it exists.
+            String updater_library_path = Path.Combine(plugin_path, "V4PUpdater.dll");
+            if (File.Exists(updater_library_path))
+            {
+                File.Delete(updater_library_path);
+            }
 
             // URI Handler
             PlayniteApi.UriHandler.RegisterSource("vxctrl", (args) =>
@@ -275,8 +280,24 @@ namespace VXApp4Playnite
             t_refresh.Start();
         }
 
-        // To add new main menu items override GetMainMenuItems
-        public override List<MainMenuItem> GetMainMenuItems(GetMainMenuItemsArgs largs)
+        public static void SpawnUpdaterThread(IPlayniteAPI PlayniteApi, VXApp4PlayniteSettings settings, String plugin_path)
+        {
+            Thread t_updater = new Thread(unused => Updater.CheckForUpdates(PlayniteApi, settings, plugin_path));
+            t_updater.Start();
+        }
+
+        public static void ShowAboutPopup(IPlayniteAPI PlayniteApi, VXApp4PlayniteSettings settings)
+        {
+            String about_msg = "VXApp4Playnite by BatteryShark\n";
+            foreach(var entry in settings.repos)
+            {
+                about_msg += $"{entry.repository_name} Version {entry.tag}\n";
+            }
+            PlayniteApi.Dialogs.ShowMessage(about_msg);
+        }
+
+    // To add new main menu items override GetMainMenuItems
+    public override List<MainMenuItem> GetMainMenuItems(GetMainMenuItemsArgs largs)
         {
             return new List<MainMenuItem>
     {
@@ -285,6 +306,18 @@ namespace VXApp4Playnite
             MenuSection = "VXApp4Playnite",
             Description = "Refresh Library",
             Action = (args) => SpawnRefreshLibrary(PlayniteApi,settings)
+        },
+        new MainMenuItem
+        {
+            MenuSection = "VXApp4Playnite",
+            Description = "Check for Updates",
+            Action = (args) => SpawnUpdaterThread(PlayniteApi,settings,plugin_path)
+        },
+        new MainMenuItem
+        {
+            MenuSection = "VXApp4Playnite",
+            Description = "About...",
+            Action = (args) => ShowAboutPopup(PlayniteApi,settings)
         }
     };
         }

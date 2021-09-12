@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace VXApp4Playnite
 {
@@ -205,10 +204,10 @@ namespace VXApp4Playnite
             public String[] preload { get; set; }
         }
 
-        public static Guid ImportGame(IPlayniteAPI PlayniteApi, string path_to_vxapp, string plugin_dir_name)
+        public static Guid ImportGame(IPlayniteAPI PlayniteApi, string path_to_vxapp)
         {
-            string vxlauncher_path = "{PlayniteDir}\\Extensions\\" + plugin_dir_name + "\\tools\\VXLauncher.exe";
-            string vxlauncher_wd = "{PlayniteDir}\\Extensions\\" + plugin_dir_name + "\\tools\\";
+            string vxlauncher_path = "{PlayniteDir}\\v4p\\tools\\VXLauncher.exe";
+            string vxlauncher_wd = "{PlayniteDir}\\v4p\\tools";
             UInt64 app_size = Utils.DirSize(new DirectoryInfo(path_to_vxapp));
             string app_size_text = Utils.FileSizeFormatter.FormatSize(app_size);
             string appinfo_path = Path.Combine(path_to_vxapp, "vxapp.info");
@@ -245,7 +244,7 @@ namespace VXApp4Playnite
 
             game.PlatformId = LookupPlatform(PlayniteApi).Id;
             game.Description = app_info.Description;
-        
+
             // Set "Play" Action
             GameAction playTask = new GameAction
             {

@@ -1,2 +1,0 @@
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\VXLauncher\obj\Debug\VXLauncher.csprojAssemblyReference.cache
-C:\Users\batte\Desktop\Playnite\Playnite\Extensions\VXApp4Playnite\src\VXLauncher\obj\Debug\VXLauncher.csproj.CoreCompileInputs.cache
