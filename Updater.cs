@@ -59,7 +59,7 @@ namespace VXApp4Playnite
         public static Boolean GetLatestReleaseTag(VXApp4PlayniteSettings.ReleaseEntry entry)
         {
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"https://api.github.com/repos/{entry.username}/{entry.repository_name}/releases");
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"https://api.github.com/repos/{entry.username}/{entry.repository_name}/releases/latest");
             request.ContentType = "application/json; charset=utf-8";
             request.UserAgent = @"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36";
 
@@ -70,9 +70,9 @@ namespace VXApp4Playnite
                 {
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
                     dynamic releases = JsonConvert.DeserializeObject(reader.ReadToEnd());
-                    if (releases[0].tag_name == entry.tag) { return false; }
-                    entry.tag = releases[0].tag_name;
-                    entry.download_url = releases[0].assets[0].browser_download_url;
+                    if (releases.tag_name == entry.tag) { return false; }
+                    entry.tag = releases.tag_name;
+                    entry.download_url = releases.assets[0].browser_download_url;
 
                     return true;
 
