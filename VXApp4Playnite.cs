@@ -286,6 +286,16 @@ namespace VXApp4Playnite
             t_updater.Start();
         }
 
+        public static void MetadataRefresher(IPlayniteAPI PlayniteApi)
+        {
+            PullRepositoryMetadata(PlayniteApi, (List<Game>)PlayniteApi.Database.Games);
+        }
+        public static void SpawnMetaRefreshThread(IPlayniteAPI PlayniteApi)
+        {
+            Thread t_mrefresher = new Thread(unused => MetadataRefresher(PlayniteApi));
+            t_mrefresher.Start();
+        }
+
         public static void ShowAboutPopup(IPlayniteAPI PlayniteApi, VXApp4PlayniteSettings settings)
         {
             String about_msg = "VXApp4Playnite by BatteryShark\n";
@@ -296,30 +306,79 @@ namespace VXApp4Playnite
             PlayniteApi.Dialogs.ShowMessage(about_msg);
         }
 
+        public static void UpdateRepositoryMetadata(IPlayniteAPI PlayniteApi, List<Game> games)
+        {
+            Platform vxp = PlayniteUtils.LookupPlatform(PlayniteApi);
+            foreach (Game g in games)
+            {
+                if (g.IsUninstalling) { continue; }
+                if (!g.PlatformId.Equals(vxp.Id)) { continue; }
+                String vxapp_info_path = Path.Combine(g.GameImagePath, "vxapp.info");
+                File.WriteAllText(vxapp_info_path, PlayniteUtils.ExportVXAppInfoData(PlayniteApi, g));
+                File.Copy(PlayniteApi.Database.GetFullFilePath(g.BackgroundImage), Path.Combine(g.GameImagePath, "background"), true);
+                File.Copy(PlayniteApi.Database.GetFullFilePath(g.CoverImage), Path.Combine(g.GameImagePath, "cover"), true);
+            }
+        }
+
+        public static void PullRepositoryMetadata(IPlayniteAPI PlayniteApi, List<Game> games)
+        {
+            Platform vxp = PlayniteUtils.LookupPlatform(PlayniteApi);
+            foreach (Game g in games)
+            {
+                if (g.IsUninstalling) { continue; }
+                if (!g.PlatformId.Equals(vxp.Id)) { continue; }
+                PlayniteApi.Database.Games.Update(PlayniteUtils.ImportVXAppInfoData(PlayniteApi, g));
+            }  
+        }
+
     // To add new main menu items override GetMainMenuItems
-    public override List<MainMenuItem> GetMainMenuItems(GetMainMenuItemsArgs largs)
+        public override List<MainMenuItem> GetMainMenuItems(GetMainMenuItemsArgs largs)
         {
             return new List<MainMenuItem>
-    {
-        new MainMenuItem
+            {
+                new MainMenuItem
+                {
+                    MenuSection = "VXApp4Playnite",
+                    Description = "Refresh Library",
+                    Action = (args) => SpawnRefreshLibrary(PlayniteApi,settings)
+                },
+                new MainMenuItem
+                {
+                    MenuSection = "VXApp4Playnite",
+                    Description = "Refresh Metadata",
+                    Action = (args) => SpawnMetaRefreshThread(PlayniteApi)
+                },
+                new MainMenuItem
+                {
+                    MenuSection = "VXApp4Playnite",
+                    Description = "Check for Updates",
+                    Action = (args) => SpawnUpdaterThread(PlayniteApi,settings,plugin_path)
+                },
+                new MainMenuItem
+                {
+                    MenuSection = "VXApp4Playnite",
+                    Description = "About...",
+                    Action = (args) => ShowAboutPopup(PlayniteApi,settings)
+                }
+            };
+       }
+
+
+        public override List<GameMenuItem> GetGameMenuItems(GetGameMenuItemsArgs largs)
         {
-            MenuSection = "VXApp4Playnite",
-            Description = "Refresh Library",
-            Action = (args) => SpawnRefreshLibrary(PlayniteApi,settings)
-        },
-        new MainMenuItem
-        {
-            MenuSection = "VXApp4Playnite",
-            Description = "Check for Updates",
-            Action = (args) => SpawnUpdaterThread(PlayniteApi,settings,plugin_path)
-        },
-        new MainMenuItem
-        {
-            MenuSection = "VXApp4Playnite",
-            Description = "About...",
-            Action = (args) => ShowAboutPopup(PlayniteApi,settings)
-        }
-    };
+            return new List<GameMenuItem>
+            {
+                new GameMenuItem
+                {
+                    Description = "[VX] Push Repository Metadata",
+                    Action = (args) => UpdateRepositoryMetadata(PlayniteApi,largs.Games)
+                },
+                new GameMenuItem
+                {
+                    Description = "[VX] Pull Repository Metadata",
+                    Action = (args) => PullRepositoryMetadata(PlayniteApi,largs.Games)
+                },
+            };
         }
 
         public override ISettings GetSettings(bool firstRunSettings){return settings;}
