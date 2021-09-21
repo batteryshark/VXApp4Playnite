@@ -23,8 +23,6 @@ namespace VXApp4Playnite
         public int? UserScore { get; set; }
         public int? CriticScore { get; set; }
         public int? CommunityScore { get; set; }
-        public String BackgroundFileName { get; set; } = "";
-        public String CoverFileName { get; set; } = "";
         public List<String> Region { get; set; } = new List<String>();
         public List<String> Series { get; set; } = new List<String>();
         public List<String> Developers { get; set; } = new List<String>();
@@ -212,21 +210,24 @@ namespace VXApp4Playnite
                 game.SourceId = LookupItemIdByName(PlayniteApi, "Source", r);
             }
 
-            if (!String.IsNullOrEmpty(entry.BackgroundFileName))
+            String existing_bg = Path.Combine(game.GameImagePath, "background");
+            if (File.Exists(existing_bg))
             {
                 if (!String.IsNullOrEmpty(game.BackgroundImage))
                 {
                     PlayniteApi.Database.RemoveFile(game.BackgroundImage);
                 }
-                game.BackgroundImage = PlayniteApi.Database.AddFile(Path.Combine(game.GameImagePath, entry.BackgroundFileName), game.Id);
+                game.BackgroundImage = PlayniteApi.Database.AddFile(existing_bg, game.Id);
             }
-            if (!String.IsNullOrEmpty(entry.CoverFileName))
+
+            String existing_cover = Path.Combine(game.GameImagePath, "cover");
+            if (File.Exists(existing_cover))
             {
                 if (!String.IsNullOrEmpty(game.CoverImage))
                 {
                     PlayniteApi.Database.RemoveFile(game.CoverImage);
                 }
-                game.CoverImage = PlayniteApi.Database.AddFile(Path.Combine(game.GameImagePath, entry.CoverFileName), game.Id);
+                game.CoverImage = PlayniteApi.Database.AddFile(existing_cover, game.Id);
             }
             return game;
         }
@@ -261,8 +262,6 @@ namespace VXApp4Playnite
             if(game.Tags != null) { foreach(var e in game.Tags) { entry.Tags.Add(e.Name); } }
             if (game.AgeRating != null) { entry.AgeRating.Add(game.AgeRating.Name); }
             if (game.Source != null) { entry.Source.Add(game.Source.Name); }
-            if (!String.IsNullOrEmpty(game.BackgroundImage)) { entry.BackgroundFileName = "background"; }
-            if (!String.IsNullOrEmpty(game.CoverImage)) { entry.CoverFileName = "cover"; }
 
             return JsonConvert.SerializeObject(entry, Formatting.Indented);
         }
