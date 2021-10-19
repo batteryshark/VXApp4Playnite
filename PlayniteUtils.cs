@@ -156,50 +156,71 @@ namespace VXApp4Playnite
 
         public static Game ImportVXAppInfoData(IPlayniteAPI PlayniteApi, Game game)
         {
-            String vxapp_info_path = Path.Combine(game.GameImagePath, "vxapp.info");
+            String vxapp_info_path = Path.Combine(game.Roms[0].Path, "vxapp.info");
             if (!File.Exists(vxapp_info_path)) { return game; }
             GameEntry entry = JsonConvert.DeserializeObject<GameEntry>(File.ReadAllText(vxapp_info_path, Encoding.UTF8));
-            if (!String.IsNullOrEmpty(entry.Name)) {game.Name = entry.Name;}
-            if (!String.IsNullOrEmpty(entry.SortingName)) {game.SortingName = entry.SortingName; }
-            if (!String.IsNullOrEmpty(entry.Description)){game.Description = entry.Description; }
-            if (!String.IsNullOrEmpty(entry.Notes)){game.Notes = entry.Notes; }
-            if (!String.IsNullOrEmpty(entry.ReleaseDate)){ game.ReleaseDate = Convert.ToDateTime(entry.ReleaseDate); }
+            if (!String.IsNullOrEmpty(entry.Name)) { game.Name = entry.Name; }
+            if (!String.IsNullOrEmpty(entry.SortingName)) { game.SortingName = entry.SortingName; }
+            if (!String.IsNullOrEmpty(entry.Description)) { game.Description = entry.Description; }
+            if (!String.IsNullOrEmpty(entry.Notes)) { game.Notes = entry.Notes; }
+            if (!String.IsNullOrEmpty(entry.ReleaseDate)) { game.ReleaseDate = new ReleaseDate(Convert.ToDateTime(entry.ReleaseDate)); }
             if (entry.UserScore != null) { game.UserScore = entry.UserScore; }
             if (entry.CriticScore != null) { game.CriticScore = entry.CriticScore; }
             if (entry.CommunityScore != null) { game.CommunityScore = entry.CommunityScore; }
-            
+
+            if (game.RegionIds != null) { game.RegionIds.Clear(); }
             foreach (var r in entry.Region)
             {
-                game.RegionId = LookupItemIdByName(PlayniteApi, "Regions", r);
+                game.RegionIds.Add(LookupItemIdByName(PlayniteApi, "Regions", r));
             }
+            if (game.SeriesIds != null) { game.SeriesIds.Clear(); }
             foreach (var r in entry.Series)
             {
-                game.SeriesId = LookupItemIdByName(PlayniteApi, "Series", r);
+                game.SeriesIds.Add(LookupItemIdByName(PlayniteApi, "Series", r));
             }
+            if (game.AgeRatingIds != null) { game.AgeRatingIds.Clear(); }
             foreach (var r in entry.AgeRating)
             {
-                game.AgeRatingId = LookupItemIdByName(PlayniteApi, "AgeRating", r);
+                game.AgeRatingIds.Add(LookupItemIdByName(PlayniteApi, "AgeRating", r));
             }
-
+            if (game.DeveloperIds != null) { game.DeveloperIds.Clear(); }
             foreach (var r in entry.Developers)
             {
                 game.DeveloperIds.Add(LookupItemIdByName(PlayniteApi, "Developers", r));
             }
+            if (game.PublisherIds != null) { game.PublisherIds.Clear(); }
             foreach (var r in entry.Publishers)
             {
                 game.PublisherIds.Add(LookupItemIdByName(PlayniteApi, "Publishers", r));
             }
+            if(game.FeatureIds != null)
+            {
+                game.FeatureIds.Clear();
+            }
+            
             foreach (var r in entry.Features)
             {
                 game.FeatureIds.Add(LookupItemIdByName(PlayniteApi, "Features", r));
+            }
+            if (game.GenreIds != null)
+            {
+                game.GenreIds.Clear();
             }
             foreach (var r in entry.Genres)
             {
                 game.GenreIds.Add(LookupItemIdByName(PlayniteApi, "Genres", r));
             }
+            if (game.CategoryIds != null)
+            {
+                game.CategoryIds.Clear();
+            }
             foreach (var r in entry.Categories)
             {
                 game.CategoryIds.Add(LookupItemIdByName(PlayniteApi, "Categories", r));
+            }
+            if (game.TagIds != null)
+            {
+                game.TagIds.Clear();
             }
             foreach (var r in entry.Tags)
             {
@@ -210,7 +231,7 @@ namespace VXApp4Playnite
                 game.SourceId = LookupItemIdByName(PlayniteApi, "Source", r);
             }
 
-            String existing_bg = Path.Combine(game.GameImagePath, "background");
+            String existing_bg = Path.Combine(game.Roms[0].Path, "background");
             if (File.Exists(existing_bg))
             {
                 if (!String.IsNullOrEmpty(game.BackgroundImage))
@@ -220,7 +241,7 @@ namespace VXApp4Playnite
                 game.BackgroundImage = PlayniteApi.Database.AddFile(existing_bg, game.Id);
             }
 
-            String existing_cover = Path.Combine(game.GameImagePath, "cover");
+            String existing_cover = Path.Combine(game.Roms[0].Path, "cover");
             if (File.Exists(existing_cover))
             {
                 if (!String.IsNullOrEmpty(game.CoverImage))
@@ -238,8 +259,7 @@ namespace VXApp4Playnite
             
             if (game.ReleaseDate != null)
             {
-                DateTime rd = (DateTime)game.ReleaseDate;
-                entry.ReleaseDate = rd.ToString("MM/dd/yyyy");
+                entry.ReleaseDate = game.ReleaseDate.ToString();
             }
 
             entry.Name = game.Name;
@@ -250,17 +270,17 @@ namespace VXApp4Playnite
             entry.UserScore = game.UserScore;
             entry.CriticScore = game.CriticScore;
             entry.CommunityScore = game.CommunityScore;
+            
 
-
-            if (game.Region != null){ entry.Region.Add(game.Region.Name);}
-            if(game.Series != null){ entry.Series.Add(game.Series.Name);}
+            if (game.Regions != null){ entry.Region.Add(game.Regions[0].Name);}
+            if(game.Series != null){ entry.Series.Add(game.Series[0].Name);}
             if(game.Developers != null) { foreach(var e in game.Developers) { entry.Developers.Add(e.Name); } }
             if(game.Publishers != null) { foreach(var e in game.Publishers) { entry.Publishers.Add(e.Name); } }
             if(game.Features != null) { foreach(var e in game.Features) { entry.Features.Add(e.Name); } }
             if(game.Genres != null) { foreach(var e in game.Genres) { entry.Genres.Add(e.Name); } }
             if(game.Categories != null) { foreach(var e in game.Categories) { entry.Categories.Add(e.Name); } }
             if(game.Tags != null) { foreach(var e in game.Tags) { entry.Tags.Add(e.Name); } }
-            if (game.AgeRating != null) { entry.AgeRating.Add(game.AgeRating.Name); }
+            if (game.AgeRatings != null) { entry.AgeRating.Add(game.AgeRatings[0].Name); }
             if (game.Source != null) { entry.Source.Add(game.Source.Name); }
 
             return JsonConvert.SerializeObject(entry, Formatting.Indented);
@@ -316,7 +336,8 @@ namespace VXApp4Playnite
         {
             foreach (var game in PlayniteApi.Database.Games)
             {
-                if ((game.GameImagePath.ToString().EndsWith(dir_name)) || (game.InstallDirectory.ToString().EndsWith(dir_name)))
+                
+                if (game.Roms[0].Path.ToString().EndsWith(dir_name) || game.InstallDirectory.ToString().EndsWith(dir_name))
                 {
                     return true;
                 }
@@ -335,14 +356,14 @@ namespace VXApp4Playnite
 
         public static Boolean InstallGame(IPlayniteAPI PlayniteApi, Game game, string local_app_path)
         {
-            if (!Directory.Exists(game.GameImagePath))
+            if (!Directory.Exists(game.Roms[0].Path))
             {
                 PlayniteApi.Dialogs.ShowErrorMessage("Cannot Find Game Image Path!", "Invalid GameImagePath");
                 return false;
             }
             game.IsInstalling = true;
             game.InstallDirectory = "";
-            string install_path = Path.Combine(local_app_path, Path.GetFileName(game.GameImagePath));
+            string install_path = Path.Combine(local_app_path, Path.GetFileName(game.Roms[0].Path));
             Thread _ithrd = new Thread(unused => AppInstaller(PlayniteApi, game, install_path));
             _ithrd.Start();
             return true;
@@ -350,10 +371,10 @@ namespace VXApp4Playnite
 
         private static void AppInstaller(IPlayniteAPI PlayniteApi, Game game, String install_path)
         {
-            Utils.CopyFilesRecursively(game.GameImagePath, install_path);
+            Utils.CopyFilesRecursively(game.Roms[0].Path, install_path);
             game.IsInstalling = false;
-            game.InstallDirectory = install_path;
-            foreach (var action in game.OtherActions)
+            game.InstallDirectory = install_path;            
+            foreach (var action in game.GameActions)
             {
                 if (action.Name.Contains("Install App"))
                 {
@@ -378,18 +399,18 @@ namespace VXApp4Playnite
                 return false;
             }
 
-            if (game.GameImagePath == game.InstallDirectory)
+            if (game.Roms[0].Path == game.InstallDirectory)
             {
                 PlayniteApi.Dialogs.ShowErrorMessage("Game install path is image path, cannot uninstall!", "Not Installed");
                 return false;
             }
 
-            string install_path = Path.Combine(local_app_path, Path.GetFileName(game.GameImagePath));
+            string install_path = Path.Combine(local_app_path, Path.GetFileName(game.Roms[0].Path));
             game.IsUninstalling = true;
             Directory.Delete(game.InstallDirectory, true);
             game.IsUninstalling = false;
-            game.InstallDirectory = game.GameImagePath;
-            foreach (var action in game.OtherActions)
+            game.InstallDirectory = game.Roms[0].Path;
+            foreach (var action in game.GameActions)
             {
                 if (action.Name.Contains("Uninstall App"))
                 {
@@ -414,9 +435,9 @@ namespace VXApp4Playnite
 
         public static Boolean ClearSavedCache(IPlayniteAPI PlayniteApi, Game game, string save_path)
         {
-            if (PlayniteApi.Dialogs.SelectString("Clearing the Cache for " + game.Name + " [" + Utils.DeriveAppCode(game.GameImagePath) + "] will erase all saved data. Please type \"YES\" to proceed.", "Are You Sure?", "").SelectedString == "YES")
+            if (PlayniteApi.Dialogs.SelectString("Clearing the Cache for " + game.Name + " [" + Utils.DeriveAppCode(game.Roms[0].Path) + "] will erase all saved data. Please type \"YES\" to proceed.", "Are You Sure?", "").SelectedString == "YES")
             {
-                string save_cache_path = Path.Combine(save_path, Utils.DeriveAppCode(game.GameImagePath));
+                string save_cache_path = Path.Combine(save_path, Utils.DeriveAppCode(game.Roms[0].Path));
                 Directory.Delete(save_cache_path, true);
                 return true;
             }
@@ -425,7 +446,7 @@ namespace VXApp4Playnite
 
         public static Boolean OpenSaveDir(IPlayniteAPI PlayniteApi, Game game, string save_path)
         {
-            string save_cache_path = Path.Combine(save_path, Utils.DeriveAppCode(game.GameImagePath));
+            string save_cache_path = Path.Combine(save_path, Utils.DeriveAppCode(game.Roms[0].Path));
             if (!Directory.Exists(save_cache_path))
             {
                 Directory.CreateDirectory(save_cache_path);
@@ -457,9 +478,7 @@ namespace VXApp4Playnite
             dynamic config_entries = JsonConvert.DeserializeObject(File.ReadAllText(appconfig_path, Encoding.UTF8));
             Game game = new Game
             {
-                GameImagePath = path_to_vxapp,
-                PlatformId = LookupPlatform(PlayniteApi).Id,
-                OtherActions = new ObservableCollection<GameAction>(),
+                GameActions = new ObservableCollection<GameAction>(),
                 TagIds = new List<Guid>(),
                 InstallDirectory = path_to_vxapp,
                 IsInstalled = true,
@@ -467,10 +486,17 @@ namespace VXApp4Playnite
                 PublisherIds = new List<Guid>(),
                 FeatureIds = new List<Guid>(),
                 GenreIds = new List<Guid>(),
-                CategoryIds = new List<Guid>()
+                CategoryIds = new List<Guid>(),
+                PlatformIds = new List<Guid>(),
+                RegionIds = new List<Guid>(),
+                SeriesIds = new List<Guid>(),
+                AgeRatingIds = new List<Guid>(),
+                Roms = new ObservableCollection<GameRom>()
             };
 
-
+            game.Roms.Add(new GameRom("ROM", path_to_vxapp));
+      
+            game.PlatformIds.Add(LookupPlatform(PlayniteApi).Id);
 
             game = ImportVXAppInfoData(PlayniteApi, game);
             // If we got absolutely nothing from that metadata import, just load the name as the directory.
@@ -511,9 +537,11 @@ namespace VXApp4Playnite
                 Type = GameActionType.File,
                 Path = vxlauncher_path,
                 Arguments = "\"{InstallDir}\" config=\"" + config_entries[0].name + "\"",
-                WorkingDir = vxlauncher_wd
+                WorkingDir = vxlauncher_wd,
+                IsPlayAction=true
+                
             };
-            game.PlayAction = playTask;
+            game.GameActions.Add(playTask);
 
 
             // Set Install Action
@@ -524,7 +552,7 @@ namespace VXApp4Playnite
                 Path = $"playnite://vxctrl/install/{game.Id}"
             };
 
-            game.OtherActions.Add(installTask);
+            game.GameActions.Add(installTask);
 
             // Set Suspend Action
             GameAction suspendTask = new GameAction
@@ -533,7 +561,7 @@ namespace VXApp4Playnite
                 Type = GameActionType.URL,
                 Path = $"playnite://vxctrl/suspend/{game.Id}"
             };
-            game.OtherActions.Add(suspendTask);
+            game.GameActions.Add(suspendTask);
 
             // Set Resume Action
             GameAction resumeTask = new GameAction
@@ -542,7 +570,7 @@ namespace VXApp4Playnite
                 Type = GameActionType.URL,
                 Path = $"playnite://vxctrl/resume/{game.Id}"
             };
-            game.OtherActions.Add(resumeTask);
+            game.GameActions.Add(resumeTask);
 
             // Set Close Action
             GameAction closeTask = new GameAction
@@ -551,7 +579,7 @@ namespace VXApp4Playnite
                 Type = GameActionType.URL,
                 Path = $"playnite://vxctrl/close/{game.Id}"
             };
-            game.OtherActions.Add(closeTask);
+            game.GameActions.Add(closeTask);
 
             // Set Force Close Action
             GameAction forceCloseTask = new GameAction
@@ -562,7 +590,7 @@ namespace VXApp4Playnite
                 Path = vxlauncher_path,
                 WorkingDir = vxlauncher_wd
             };
-            game.OtherActions.Add(forceCloseTask);
+            game.GameActions.Add(forceCloseTask);
 
             // Set Clear Cache Action
             GameAction ccTask = new GameAction
@@ -571,7 +599,7 @@ namespace VXApp4Playnite
                 Type = GameActionType.URL,
                 Path = $"playnite://vxctrl/clearcache/{game.Id}"
             };
-            game.OtherActions.Add(ccTask);
+            game.GameActions.Add(ccTask);
 
             GameAction openSaveTask = new GameAction
             {
@@ -579,7 +607,7 @@ namespace VXApp4Playnite
                 Type = GameActionType.URL,
                 Path = $"playnite://vxctrl/opensave/{game.Id}"
             };
-            game.OtherActions.Add(openSaveTask);
+            game.GameActions.Add(openSaveTask);
 
             foreach (var entry in config_entries)
             {
@@ -592,7 +620,7 @@ namespace VXApp4Playnite
                     WorkingDir = vxlauncher_wd
 
                 };
-                game.OtherActions.Add(ngaction);
+                game.GameActions.Add(ngaction);
             }
 
             PlayniteApi.Database.Games.Add(game);

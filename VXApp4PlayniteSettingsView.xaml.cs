@@ -29,7 +29,7 @@ namespace VXApp4Playnite
             tpath_app.Text = this.plugin.PlayniteApi.Dialogs.SelectFolder();
             if(tpath_app.Text == "")
             {
-                tpath_app.Text = this.plugin.settings.fallback_app_path;
+                tpath_app.Text = this.plugin.settings.Settings.fallback_app_path;
                 
             }
         }
@@ -39,7 +39,7 @@ namespace VXApp4Playnite
             tpath_tmp.Text = this.plugin.PlayniteApi.Dialogs.SelectFolder();
             if (tpath_tmp.Text == "")
             {
-                tpath_tmp.Text = this.plugin.settings.fallback_tmp_path;
+                tpath_tmp.Text = this.plugin.settings.Settings.fallback_tmp_path;
                
 
             }
@@ -51,7 +51,7 @@ namespace VXApp4Playnite
             tpath_save.Text = this.plugin.PlayniteApi.Dialogs.SelectFolder();
             if (tpath_save.Text == "")
             {
-                tpath_save.Text = this.plugin.settings.fallback_save_path;
+                tpath_save.Text = this.plugin.settings.Settings.fallback_save_path;
                 
 
 

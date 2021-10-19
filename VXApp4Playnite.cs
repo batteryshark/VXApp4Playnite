@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Playnite.SDK;
+using Playnite.SDK.Controls;
+using Playnite.SDK.Events;
 using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
 using System;
@@ -10,6 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+
 
 
 namespace VXApp4Playnite
@@ -25,12 +28,8 @@ namespace VXApp4Playnite
 
  
 
-    public class VXApp4Playnite : Plugin {
-        public override void OnGameInstalled(Game game) { }
+    public class VXApp4Playnite : GenericPlugin {
 
-
-        public override void OnGameUninstalled(Game game) { }
-        public override void OnLibraryUpdated() { }
         public override Guid Id { get; } = Guid.Parse("b9e83df4-c46b-4877-9291-ba742c9eb142");
         private static readonly ILogger logger = LogManager.GetLogger();
         public String plugin_path;
@@ -38,8 +37,8 @@ namespace VXApp4Playnite
         public static BackSplash.BackSplash bs;
 
 
-        
-        public VXApp4PlayniteSettings settings { get; set; }
+
+        public VXApp4PlayniteSettingsViewModel settings { get; set; }
         Thread tRepositoryMonitor;
 
         public static void RefreshLibrary(IPlayniteAPI PlayniteApi,VXApp4PlayniteSettings settings)
@@ -54,23 +53,23 @@ namespace VXApp4Playnite
             foreach (var game in PlayniteApi.Database.Games)
             {
                 if (game.IsUninstalling) { continue; }
-                if (!game.PlatformId.Equals(vxp.Id)) { continue; }
+                if (!game.PlatformIds[0].Equals(vxp.Id)) { continue; }
 
                 AppEntry ne = new AppEntry
                 {
                     isNew = false,
                     hasRepo = false,
-                    imagePath = game.GameImagePath,
+                    imagePath = game.Roms[0].Path,
                     entryId = game.Id
                 };
 
-                if (appcache.ContainsKey(Path.GetFileName(game.GameImagePath)))
+                if (appcache.ContainsKey(Path.GetFileName(game.Roms[0].Path)))
                 {
-                    appcache[Path.GetFileName(game.GameImagePath)] = ne;
+                    appcache[Path.GetFileName(game.Roms[0].Path)] = ne;
                 }
                 else
                 {
-                    appcache.Add(Path.GetFileName(game.GameImagePath), ne);
+                    appcache.Add(Path.GetFileName(game.Roms[0].Path), ne);
                 }
             }
 
@@ -124,15 +123,15 @@ namespace VXApp4Playnite
                     // If we got a new ImagePath, replace our old one.
                     if (Directory.Exists(entry.newImagePath))
                     {
-                        PlayniteApi.Database.Games[entry.entryId].GameImagePath = entry.newImagePath;
+                        PlayniteApi.Database.Games[entry.entryId].Roms[0].Path = entry.newImagePath;
                         Game g = PlayniteApi.Database.Games[entry.entryId];
                         PlayniteApi.Database.Games.Update(g);
                     }
 
                     // If the imagePath no longer exists and it's the same as installPath, prune.
-                    if ((!Directory.Exists(PlayniteApi.Database.Games[entry.entryId].GameImagePath)) || !entry.hasRepo)
+                    if ((!Directory.Exists(PlayniteApi.Database.Games[entry.entryId].Roms[0].Path)) || !entry.hasRepo)
                     {
-                        if (PlayniteApi.Database.Games[entry.entryId].GameImagePath == PlayniteApi.Database.Games[entry.entryId].InstallDirectory)
+                        if (PlayniteApi.Database.Games[entry.entryId].Roms[0].Path == PlayniteApi.Database.Games[entry.entryId].InstallDirectory)
                         {
                             Game g = PlayniteApi.Database.Games[entry.entryId];
                             PlayniteApi.Database.Games.Remove(g);
@@ -161,7 +160,7 @@ namespace VXApp4Playnite
                 // We will let this thread chill if any app is running.
                 if (!PlayniteUtils.IsAnyAppRunning(plugin.PlayniteApi))
                 {
-                    RefreshLibrary(plugin.PlayniteApi,plugin.settings);
+                    RefreshLibrary(plugin.PlayniteApi,plugin.settings.Settings);
                 }
                 // Wait to Update
                 Thread.Sleep(60000);
@@ -173,9 +172,14 @@ namespace VXApp4Playnite
 
         public VXApp4Playnite(IPlayniteAPI api) : base(api)
         {
-            settings = new VXApp4PlayniteSettings(this);
-            settings.plugin_name = "VXApp4Playnite" + "_" + this.Id.ToString();
-            plugin_path = Path.Combine(PlayniteApi.Paths.ApplicationPath, "Extensions", settings.plugin_name);
+           
+            Properties = new GenericPluginProperties
+            {
+                HasSettings = true
+            };
+            settings = new VXApp4PlayniteSettingsViewModel(this);
+            settings.Settings.plugin_name = "VXApp4Playnite" + "_" + this.Id.ToString();
+            plugin_path = Path.Combine(PlayniteApi.Paths.ApplicationPath, "Extensions", settings.Settings.plugin_name);
 
             Directory.CreateDirectory(plugin_path);
 
@@ -185,6 +189,8 @@ namespace VXApp4Playnite
             {
                 File.Delete(updater_library_path);
             }
+
+
 
             // URI Handler
             PlayniteApi.UriHandler.RegisterSource("vxctrl", (args) =>
@@ -196,25 +202,25 @@ namespace VXApp4Playnite
                 switch (args.Arguments[0])
                 {
                     case "suspend":
-                        Utils.SendVXCommand(Utils.GetPipeName(game.GameImagePath), "SUSPEND");
+                        Utils.SendVXCommand(Utils.GetPipeName(game.Roms[0].Path), "SUSPEND");
                         break;
                     case "resume":
-                        Utils.SendVXCommand(Utils.GetPipeName(game.GameImagePath), "RESUME");
+                        Utils.SendVXCommand(Utils.GetPipeName(game.Roms[0].Path), "RESUME");
                         break;
                     case "close":
-                        Utils.SendVXCommand(Utils.GetPipeName(game.GameImagePath), "SHUTDOWN");
+                        Utils.SendVXCommand(Utils.GetPipeName(game.Roms[0].Path), "SHUTDOWN");
                         break;
                     case "clearcache":
-                        op_status = PlayniteUtils.ClearSavedCache(PlayniteApi, game, settings.save_path);
+                        op_status = PlayniteUtils.ClearSavedCache(PlayniteApi, game, settings.Settings.save_path);
                         break;
                     case "install":
-                        op_status = PlayniteUtils.InstallGame(PlayniteApi, game, settings.local_app_path);
+                        op_status = PlayniteUtils.InstallGame(PlayniteApi, game, settings.Settings.local_app_path);
                         break;
                     case "uninstall":
-                        op_status = PlayniteUtils.UninstallGame(PlayniteApi, game, settings.local_app_path);
+                        op_status = PlayniteUtils.UninstallGame(PlayniteApi, game, settings.Settings.local_app_path);
                         break;
                     case "opensave":
-                        op_status = PlayniteUtils.OpenSaveDir(PlayniteApi, game, settings.local_app_path);
+                        op_status = PlayniteUtils.OpenSaveDir(PlayniteApi, game, settings.Settings.local_app_path);
                         break;
                     default:
                         break;
@@ -223,52 +229,53 @@ namespace VXApp4Playnite
 
             bs = new BackSplash.BackSplash();
 
-            if (settings.enable_rrf)
+            if (settings.Settings.enable_rrf)
             {
                 tRepositoryMonitor = new Thread(new ParameterizedThreadStart(RepositoryMonitor));
             }
             
         }
 
-        public override void OnApplicationStarted()
+        public override void OnApplicationStarted(OnApplicationStartedEventArgs args)
         {
-            if (settings.enable_rrf)
+            if (settings.Settings.enable_rrf)
             {
                 tRepositoryMonitor.Start(this);
             }
            
         }
 
-        public override void OnApplicationStopped()
+        public override void OnApplicationStopped(OnApplicationStoppedEventArgs args)
         {
-            if (settings.enable_rrf)
+            if (settings.Settings.enable_rrf)
             {
                 tRepositoryMonitor.Abort();
             }
         }
 
-
-        public override void OnGameStarting(Game game) {
-            if(game.BackgroundImage != null && settings.enable_backsplash)
+       public override void OnGameStarting(OnGameStartingEventArgs args) { 
+            
+            if(args.Game.BackgroundImage != null && settings.Settings.enable_backsplash)
             {
 
-                if (File.Exists(PlayniteApi.Database.GetFullFilePath(game.BackgroundImage)))
+                if (File.Exists(PlayniteApi.Database.GetFullFilePath(args.Game.BackgroundImage)))
                 {
-                    bs.Enable(PlayniteApi.Database.GetFullFilePath(game.BackgroundImage));
+                    bs.Enable(PlayniteApi.Database.GetFullFilePath(args.Game.BackgroundImage));
                 }
             }
             
         }
 
-        public override void OnGameStarted(Game game) {
-            if (settings.enable_backsplash)
+        public override void OnGameStarted(OnGameStartedEventArgs args) { 
+            if (settings.Settings.enable_backsplash)
             {
                 bs.Show();
             }        
         }
 
-        public override void OnGameStopped(Game game, long elapsedSeconds) {
-            if (settings.enable_backsplash)
+        public override void OnGameStopped(OnGameStoppedEventArgs args)
+        {
+            if (settings.Settings.enable_backsplash)
             {
                 bs.Disable();
             }
@@ -280,7 +287,7 @@ namespace VXApp4Playnite
             t_refresh.Start();
         }
 
-        public static void SpawnUpdaterThread(IPlayniteAPI PlayniteApi, VXApp4PlayniteSettings settings, String plugin_path)
+        public static void SpawnUpdaterThread(IPlayniteAPI PlayniteApi, VXApp4PlayniteSettingsViewModel settings, String plugin_path)
         {
             Thread t_updater = new Thread(unused => Updater.CheckForUpdates(PlayniteApi, settings, plugin_path));
             t_updater.Start();
@@ -288,7 +295,12 @@ namespace VXApp4Playnite
 
         public static void MetadataRefresher(IPlayniteAPI PlayniteApi)
         {
-            PullRepositoryMetadata(PlayniteApi, (List<Game>)PlayniteApi.Database.Games);
+            List<Game> games = new List<Game>();
+            foreach (var game in PlayniteApi.Database.Games)
+            {
+                games.Add(game);
+            }
+            PullRepositoryMetadata(PlayniteApi, games);
         }
         public static void SpawnMetaRefreshThread(IPlayniteAPI PlayniteApi)
         {
@@ -312,27 +324,28 @@ namespace VXApp4Playnite
             foreach (Game g in games)
             {
                 if (g.IsUninstalling) { continue; }
-                if (!g.PlatformId.Equals(vxp.Id)) { continue; }
-                String vxapp_info_path = Path.Combine(g.GameImagePath, "vxapp.info");
+                if (!g.PlatformIds[0].Equals(vxp.Id)) { continue; }
+                String vxapp_info_path = Path.Combine(g.Roms[0].Path, "vxapp.info");
                 File.WriteAllText(vxapp_info_path, PlayniteUtils.ExportVXAppInfoData(PlayniteApi, g));
-                File.Copy(PlayniteApi.Database.GetFullFilePath(g.BackgroundImage), Path.Combine(g.GameImagePath, "background"), true);
-                File.Copy(PlayniteApi.Database.GetFullFilePath(g.CoverImage), Path.Combine(g.GameImagePath, "cover"), true);
+                File.Copy(PlayniteApi.Database.GetFullFilePath(g.BackgroundImage), Path.Combine(g.Roms[0].Path, "background"), true);
+                File.Copy(PlayniteApi.Database.GetFullFilePath(g.CoverImage), Path.Combine(g.Roms[0].Path, "cover"), true);
             }
         }
 
         public static void PullRepositoryMetadata(IPlayniteAPI PlayniteApi, List<Game> games)
         {
-            Platform vxp = PlayniteUtils.LookupPlatform(PlayniteApi);
+            
+               Platform vxp = PlayniteUtils.LookupPlatform(PlayniteApi);
             foreach (Game g in games)
-            {
+            {                
                 if (g.IsUninstalling) { continue; }
-                if (!g.PlatformId.Equals(vxp.Id)) { continue; }
+                if (!g.PlatformIds[0].Equals(vxp.Id)) { continue; }
                 PlayniteApi.Database.Games.Update(PlayniteUtils.ImportVXAppInfoData(PlayniteApi, g));
             }  
         }
 
     // To add new main menu items override GetMainMenuItems
-        public override List<MainMenuItem> GetMainMenuItems(GetMainMenuItemsArgs largs)
+        public override IEnumerable<MainMenuItem> GetMainMenuItems(GetMainMenuItemsArgs largs)
         {
             return new List<MainMenuItem>
             {
@@ -340,7 +353,7 @@ namespace VXApp4Playnite
                 {
                     MenuSection = "VXApp4Playnite",
                     Description = "Refresh Library",
-                    Action = (args) => SpawnRefreshLibrary(PlayniteApi,settings)
+                    Action = (args) => SpawnRefreshLibrary(PlayniteApi,settings.Settings)
                 },
                 new MainMenuItem
                 {
@@ -358,25 +371,25 @@ namespace VXApp4Playnite
                 {
                     MenuSection = "VXApp4Playnite",
                     Description = "About...",
-                    Action = (args) => ShowAboutPopup(PlayniteApi,settings)
+                    Action = (args) => ShowAboutPopup(PlayniteApi,settings.Settings)
                 }
             };
        }
 
 
-        public override List<GameMenuItem> GetGameMenuItems(GetGameMenuItemsArgs largs)
+        public override IEnumerable<GameMenuItem> GetGameMenuItems(GetGameMenuItemsArgs largs)
         {
             return new List<GameMenuItem>
             {
                 new GameMenuItem
                 {
                     Description = "[VX] Push Repository Metadata",
-                    Action = (args) => UpdateRepositoryMetadata(PlayniteApi,largs.Games)
+                    Action = (args) => {UpdateRepositoryMetadata(PlayniteApi,largs.Games); }
                 },
                 new GameMenuItem
                 {
                     Description = "[VX] Pull Repository Metadata",
-                    Action = (args) => PullRepositoryMetadata(PlayniteApi,largs.Games)
+                    Action = (args) =>{ PullRepositoryMetadata(PlayniteApi,largs.Games); }
                 },
             };
         }

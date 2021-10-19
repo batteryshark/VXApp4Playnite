@@ -30,7 +30,7 @@ namespace VXApp4Playnite
             }
         }
 
-        public static Boolean ProcessUpdate(VXApp4PlayniteSettings.ReleaseEntry update, String destination_path)
+        public static Boolean ProcessUpdate(ReleaseEntry update, String destination_path)
         {
             if (!Directory.Exists(destination_path))
             {
@@ -56,7 +56,7 @@ namespace VXApp4Playnite
             return true;
         }
 
-        public static Boolean GetLatestReleaseTag(VXApp4PlayniteSettings.ReleaseEntry entry)
+        public static Boolean GetLatestReleaseTag(ReleaseEntry entry)
         {
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"https://api.github.com/repos/{entry.username}/{entry.repository_name}/releases/latest");
@@ -96,14 +96,14 @@ namespace VXApp4Playnite
             File.Move(Path.Combine(update_path, "V4PUpdater.dll"), Path.Combine(plugin_path, "V4PUpdater.dll"));
         }
 
-        public static void CheckForUpdates(IPlayniteAPI PlayniteApi, VXApp4PlayniteSettings settings, String plugin_path)
+        public static void CheckForUpdates(IPlayniteAPI PlayniteApi, VXApp4PlayniteSettingsViewModel settings, String plugin_path)
         {
             Boolean at_least_one_update = false;
             String update_info = "Updated: ";
             Boolean plugin_updated = false;
             String plugin_update_path = "";
-            List<VXApp4PlayniteSettings.ReleaseEntry> test_updates = new List<VXApp4PlayniteSettings.ReleaseEntry>(settings.repos);
-            foreach(int i in Enumerable.Range(0,settings.repos.Count()))
+            List<ReleaseEntry> test_updates = new List<ReleaseEntry>(settings.Settings.repos);
+            foreach(int i in Enumerable.Range(0,settings.Settings.repos.Count()))
             {
                 try
                 {
@@ -118,10 +118,10 @@ namespace VXApp4Playnite
                                 plugin_updated = true;
                                 plugin_update_path = dest_path;
                             }
-                            settings.repos[i].download_url = test_updates[i].download_url;
-                            settings.repos[i].tag = test_updates[i].tag;
+                            settings.Settings.repos[i].download_url = test_updates[i].download_url;
+                            settings.Settings.repos[i].tag = test_updates[i].tag;
                             at_least_one_update = true;
-                            update_info += $"{settings.repos[i].repository_name} [{settings.repos[i].tag}]\n";
+                            update_info += $"{settings.Settings.repos[i].repository_name} [{settings.Settings.repos[i].tag}]\n";
                         }
                     }
                 }
