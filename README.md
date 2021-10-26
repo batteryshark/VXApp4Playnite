@@ -27,5 +27,3 @@ Game-Specific Context Menu:
 Fullscreen mode now resembles something more like what we'd see on a console:
 
 ![v4p3](assets/v4p3.png)
-
-![v4p4](assets/v4p4.png)
