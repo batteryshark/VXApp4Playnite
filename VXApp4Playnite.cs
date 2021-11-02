@@ -220,7 +220,7 @@ namespace VXApp4Playnite
                         op_status = PlayniteUtils.UninstallGame(PlayniteApi, game, settings.Settings.local_app_path);
                         break;
                     case "opensave":
-                        op_status = PlayniteUtils.OpenSaveDir(PlayniteApi, game, settings.Settings.local_app_path);
+                        op_status = PlayniteUtils.OpenSaveDir(PlayniteApi, game, settings.Settings.save_path);
                         break;
                     default:
                         break;
