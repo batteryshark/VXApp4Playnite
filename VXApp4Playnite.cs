@@ -287,11 +287,6 @@ namespace VXApp4Playnite
             t_refresh.Start();
         }
 
-        public static void SpawnUpdaterThread(IPlayniteAPI PlayniteApi, VXApp4PlayniteSettingsViewModel settings, String plugin_path)
-        {
-            Thread t_updater = new Thread(unused => Updater.CheckForUpdates(PlayniteApi, settings, plugin_path));
-            t_updater.Start();
-        }
 
         public static void MetadataRefresher(IPlayniteAPI PlayniteApi)
         {
@@ -360,12 +355,6 @@ namespace VXApp4Playnite
                     MenuSection = "VXApp4Playnite",
                     Description = "Refresh Metadata",
                     Action = (args) => SpawnMetaRefreshThread(PlayniteApi)
-                },
-                new MainMenuItem
-                {
-                    MenuSection = "VXApp4Playnite",
-                    Description = "Check for Updates",
-                    Action = (args) => SpawnUpdaterThread(PlayniteApi,settings,plugin_path)
                 },
                 new MainMenuItem
                 {
